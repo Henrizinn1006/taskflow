@@ -26,11 +26,16 @@
             <form action="{{ url_for('criar') }}" method="post" class="form-nova">
                 <input type="text" name="titulo" placeholder="Título da tarefa *" required>
                 <input type="text" name="descricao" placeholder="Descrição (opcional)">
+                <select name="prioridade">
+                    {% for p in prioridades %}
+                        <option value="{{ p }}" {% if p == 'Média' %}selected{% endif %}>{{ p }}</option>
+                    {% endfor %}
+                </select>
                 <button type="submit">Adicionar</button>
             </form>
         </section>
 
-        <!-- Lista de tarefas (READ) -->
+        <!-- Lista de tarefas (READ) ordenada por prioridade -->
         <section class="card">
             <h2>Tarefas ({{ tarefas|length }})</h2>
             {% if tarefas %}
@@ -40,18 +45,20 @@
                         <th>#</th>
                         <th>Título</th>
                         <th>Descrição</th>
+                        <th>Prioridade</th>
                         <th>Status</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for t in tarefas %}
-                    <tr>
+                    <tr class="prioridade-{{ t.prioridade|lower|replace('é','e') }}">
                         <td>{{ t.id }}</td>
                         <td>{{ t.titulo }}</td>
                         <td>{{ t.descricao }}</td>
+                        <td><span class="badge">{{ t.prioridade }}</span></td>
                         <td>
-                            <!-- UPDATE: mudar status -->
+                            <!-- UPDATE: mudar status/prioridade -->
                             <form action="{{ url_for('atualizar', id_tarefa=t.id) }}" method="post" class="inline">
                                 <select name="status" onchange="this.form.submit()">
                                     {% for s in status_validos %}
