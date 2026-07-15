@@ -55,6 +55,18 @@ table { width: 100%; border-collapse: collapse; }
 th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #e2e8f0; }
 th { color: #64748b; font-size: 13px; text-transform: uppercase; }
 
+/* Destaque visual por prioridade (mudança de escopo) */
+.prioridade-alta .badge  { background: #fee2e2; color: #b91c1c; }
+.prioridade-media .badge { background: #fef9c3; color: #a16207; }
+.prioridade-baixa .badge { background: #dcfce7; color: #15803d; }
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
 .inline { display: inline; }
 
 .alerta { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }
