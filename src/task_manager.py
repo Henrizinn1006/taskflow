@@ -18,6 +18,10 @@ import os
 # Status permitidos para uma tarefa (espelham as colunas do Kanban)
 STATUS_VALIDOS = ("A Fazer", "Em Progresso", "Concluído")
 
+# Prioridades permitidas — adicionadas na MUDANÇA DE ESCOPO,
+# a pedido do cliente (startup de logística) para destacar tarefas críticas
+PRIORIDADES_VALIDAS = ("Alta", "Média", "Baixa")
+
 
 class GerenciadorDeTarefas:
     """Gerencia o ciclo de vida das tarefas (CRUD + persistência)."""
@@ -52,16 +56,24 @@ class GerenciadorDeTarefas:
     # ------------------------------------------------------------------
     # CREATE
     # ------------------------------------------------------------------
-    def criar_tarefa(self, titulo, descricao=""):
+    def criar_tarefa(self, titulo, descricao="", prioridade="Média"):
         """Cria uma nova tarefa após validar as entradas."""
         # Validação de entrada: título é obrigatório
         if not titulo or not titulo.strip():
             raise ValueError("O título da tarefa é obrigatório.")
+        # Validação de entrada: prioridade deve ser válida
+        if prioridade not in PRIORIDADES_VALIDAS:
+            raise ValueError(
+                f"Prioridade inválida: {prioridade}. "
+                f"Use uma de: {PRIORIDADES_VALIDAS}"
+            )
+
         tarefa = {
             "id": self._proximo_id,
             "titulo": titulo.strip(),
             "descricao": descricao.strip(),
-            "status": "A Fazer",  # toda tarefa nasce na coluna A Fazer
+            "status": "A Fazer",          # toda tarefa nasce na coluna A Fazer
+            "prioridade": prioridade,     # campo da mudança de escopo
         }
         self.tarefas.append(tarefa)
         self._proximo_id += 1
@@ -72,8 +84,9 @@ class GerenciadorDeTarefas:
     # READ
     # ------------------------------------------------------------------
     def listar_tarefas(self):
-        """Retorna todas as tarefas cadastradas."""
-        return list(self.tarefas)
+        """Retorna todas as tarefas ordenadas por prioridade (Alta primeiro)."""
+        ordem = {"Alta": 0, "Média": 1, "Baixa": 2}
+        return sorted(self.tarefas, key=lambda t: ordem.get(t.get("prioridade", "Média"), 1))
 
     def buscar_tarefa(self, id_tarefa):
         """Busca uma tarefa pelo ID. Retorna None se não existir."""
@@ -86,7 +99,7 @@ class GerenciadorDeTarefas:
     # UPDATE
     # ------------------------------------------------------------------
     def atualizar_tarefa(self, id_tarefa, titulo=None, descricao=None,
-                         status=None):
+                         status=None, prioridade=None):
         """Atualiza os campos informados de uma tarefa existente."""
         tarefa = self.buscar_tarefa(id_tarefa)
         if tarefa is None:
@@ -106,6 +119,14 @@ class GerenciadorDeTarefas:
                     f"Status inválido: {status}. Use um de: {STATUS_VALIDOS}"
                 )
             tarefa["status"] = status
+
+        if prioridade is not None:
+            if prioridade not in PRIORIDADES_VALIDAS:
+                raise ValueError(
+                    f"Prioridade inválida: {prioridade}. "
+                    f"Use uma de: {PRIORIDADES_VALIDAS}"
+                )
+            tarefa["prioridade"] = prioridade
 
         self._salvar()
         return tarefa

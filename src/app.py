@@ -14,7 +14,7 @@ Para executar:
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 
-from task_manager import GerenciadorDeTarefas, STATUS_VALIDOS
+from task_manager import GerenciadorDeTarefas, STATUS_VALIDOS, PRIORIDADES_VALIDAS
 
 app = Flask(__name__)
 app.secret_key = "taskflow-dev"  # usada apenas para mensagens flash
@@ -25,12 +25,13 @@ gerenciador = GerenciadorDeTarefas()
 
 @app.route("/")
 def index():
-    """READ — lista todas as tarefas cadastradas."""
+    """READ — lista todas as tarefas, ordenadas por prioridade."""
     tarefas = gerenciador.listar_tarefas()
     return render_template(
         "index.html",
         tarefas=tarefas,
         status_validos=STATUS_VALIDOS,
+        prioridades=PRIORIDADES_VALIDAS,
     )
 
 
@@ -41,6 +42,7 @@ def criar():
         gerenciador.criar_tarefa(
             titulo=request.form.get("titulo", ""),
             descricao=request.form.get("descricao", ""),
+            prioridade=request.form.get("prioridade", "Média"),
         )
         flash("Tarefa criada com sucesso!", "sucesso")
     except ValueError as erro:
@@ -50,11 +52,12 @@ def criar():
 
 @app.route("/atualizar/<int:id_tarefa>", methods=["POST"])
 def atualizar(id_tarefa):
-    """UPDATE — altera o status de uma tarefa."""
+    """UPDATE — altera status e/ou prioridade de uma tarefa."""
     try:
         gerenciador.atualizar_tarefa(
             id_tarefa,
             status=request.form.get("status") or None,
+            prioridade=request.form.get("prioridade") or None,
         )
         flash("Tarefa atualizada!", "sucesso")
     except ValueError as erro:
