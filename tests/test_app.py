@@ -40,7 +40,7 @@ def test_criar_tarefa_via_formulario(cliente):
     """POST /criar deve adicionar a tarefa e redirecionar para a lista."""
     resposta = cliente.post(
         "/criar",
-        data={"titulo": "Entrega urgente", "descricao": "Rota SP-RJ"},
+        data={"titulo": "Entrega urgente", "descricao": "Rota SP-RJ", "prioridade": "Alta"},
         follow_redirects=True,
     )
     assert resposta.status_code == 200
@@ -58,7 +58,7 @@ def test_criar_tarefa_sem_titulo_mostra_erro(cliente):
 
 def test_atualizar_status_da_tarefa(cliente):
     """POST /atualizar deve mudar o status exibido."""
-    cliente.post("/criar", data={"titulo": "Testar CI"})
+    cliente.post("/criar", data={"titulo": "Testar CI", "prioridade": "Média"})
     resposta = cliente.post(
         "/atualizar/1", data={"status": "Concluído"}, follow_redirects=True
     )
@@ -68,7 +68,7 @@ def test_atualizar_status_da_tarefa(cliente):
 
 def test_excluir_tarefa(cliente):
     """POST /excluir deve remover a tarefa da lista."""
-    cliente.post("/criar", data={"titulo": "Tarefa descartável"})
+    cliente.post("/criar", data={"titulo": "Tarefa descartável", "prioridade": "Baixa"})
     resposta = cliente.post("/excluir/1", follow_redirects=True)
     assert resposta.status_code == 200
     assert "Tarefa descartável".encode() not in resposta.data

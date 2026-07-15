@@ -31,10 +31,11 @@ def gerenciador(tmp_path):
 # ----------------------------------------------------------------------
 def test_criar_tarefa_valida(gerenciador):
     """Deve criar uma tarefa com os dados informados."""
-    tarefa = gerenciador.criar_tarefa("Configurar banco", "Criar schema inicial")
+    tarefa = gerenciador.criar_tarefa("Configurar banco", "Criar schema inicial", "Alta")
     assert tarefa["id"] == 1
     assert tarefa["titulo"] == "Configurar banco"
     assert tarefa["status"] == "A Fazer"
+    assert tarefa["prioridade"] == "Alta"
 
 
 def test_criar_tarefa_sem_titulo_gera_erro(gerenciador):
@@ -45,14 +46,23 @@ def test_criar_tarefa_sem_titulo_gera_erro(gerenciador):
         gerenciador.criar_tarefa("   ")
 
 
+def test_criar_tarefa_prioridade_invalida_gera_erro(gerenciador):
+    """Validação de entrada: prioridade inexistente deve gerar ValueError."""
+    with pytest.raises(ValueError):
+        gerenciador.criar_tarefa("Tarefa", prioridade="Urgentíssima")
+
+
 # ----------------------------------------------------------------------
 # READ
 # ----------------------------------------------------------------------
-def test_listar_tarefas(gerenciador):
-    """Deve listar todas as tarefas criadas."""
-    gerenciador.criar_tarefa("Tarefa 1")
-    gerenciador.criar_tarefa("Tarefa 2")
-    assert len(gerenciador.listar_tarefas()) == 2
+def test_listar_ordena_por_prioridade(gerenciador):
+    """Tarefas de prioridade Alta devem aparecer primeiro (mudança de escopo)."""
+    gerenciador.criar_tarefa("Baixa prioridade", prioridade="Baixa")
+    gerenciador.criar_tarefa("Alta prioridade", prioridade="Alta")
+    gerenciador.criar_tarefa("Média prioridade", prioridade="Média")
+
+    lista = gerenciador.listar_tarefas()
+    assert [t["prioridade"] for t in lista] == ["Alta", "Média", "Baixa"]
 
 
 def test_buscar_tarefa_inexistente_retorna_none(gerenciador):
@@ -107,7 +117,7 @@ def test_persistencia_em_json(tmp_path):
     arquivo = str(tmp_path / "tarefas.json")
 
     g1 = GerenciadorDeTarefas(caminho_arquivo=arquivo)
-    g1.criar_tarefa("Tarefa persistida")
+    g1.criar_tarefa("Tarefa persistida", prioridade="Alta")
 
     g2 = GerenciadorDeTarefas(caminho_arquivo=arquivo)
     tarefas = g2.listar_tarefas()
