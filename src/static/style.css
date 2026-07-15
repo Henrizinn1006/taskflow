@@ -1,0 +1,71 @@
+/* TaskFlow — estilos da interface */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f0f4f8;
+    color: #1f2937;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    color: #fff;
+    padding: 24px 32px;
+}
+
+header p { opacity: .85; margin-top: 4px; }
+
+main { flex: 1; max-width: 960px; width: 100%; margin: 24px auto; padding: 0 16px; }
+
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.card h2 { margin-bottom: 14px; color: #1e3a8a; }
+
+.form-nova { display: flex; gap: 10px; flex-wrap: wrap; }
+.form-nova input[type="text"] { flex: 1; min-width: 180px; }
+
+input, select, button {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+button {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+button:hover { background: #1d4ed8; }
+button.excluir { background: #dc2626; }
+button.excluir:hover { background: #b91c1c; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+th { color: #64748b; font-size: 13px; text-transform: uppercase; }
+
+.inline { display: inline; }
+
+.alerta { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; }
+.alerta.sucesso { background: #dcfce7; color: #15803d; }
+.alerta.erro { background: #fee2e2; color: #b91c1c; }
+
+.vazio { color: #64748b; padding: 12px 0; }
+
+footer {
+    text-align: center;
+    padding: 16px;
+    color: #64748b;
+    font-size: 13px;
+}
