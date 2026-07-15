@@ -3,8 +3,8 @@
 ![CI](https://github.com/Henrizinn1006/taskflow/actions/workflows/ci.yml/badge.svg)
 
 Projeto desenvolvido pela **TechFlow Solutions** (empresa fictícia) para uma startup de
-logística que precisa acompanhar o fluxo de trabalho em tempo real, priorizar tarefas
-críticas e monitorar o desempenho da equipe.
+logística que precisa acompanhar o fluxo de trabalho em tempo real, **priorizar tarefas
+críticas** e monitorar o desempenho da equipe.
 
 > Trabalho da disciplina de **Engenharia de Software** — *Construindo um Projeto Ágil no
 > GitHub: Da Gestão ao Controle de Qualidade*.
@@ -25,6 +25,10 @@ o ciclo de vida real de um software — do planejamento à gestão de mudanças.
 - Persistência de dados em arquivo JSON;
 - Testes automatizados com Pytest;
 - Pipeline de CI com GitHub Actions (lint + testes).
+
+**Escopo após mudança (ver seção Gestão de Mudanças):**
+- ➕ Campo de **prioridade** (Alta / Média / Baixa) nas tarefas, com ordenação
+  automática e destaque visual das tarefas críticas.
 
 ## 🔄 Metodologia
 
@@ -81,6 +85,27 @@ taskflow/
 ├── requirements.txt
 └── README.md
 ```
+
+## 🔀 Gestão de Mudanças (mudança de escopo)
+
+**O que mudou:** durante o desenvolvimento, o cliente (startup de logística) solicitou a
+inclusão de um campo de **prioridade** nas tarefas, pois entregas críticas estavam se
+perdendo no meio da lista.
+
+**Justificativa:** em logística, atrasos em tarefas críticas (ex.: liberação de uma carga)
+geram custo direto. A priorização visual permite que a equipe identifique imediatamente o
+que não pode esperar — atendendo ao requisito original de "priorizar tarefas críticas".
+
+**Como a mudança foi gerenciada (processo ágil):**
+1. Novo card **"Adicionar campo de prioridade às tarefas"** criado na coluna *A Fazer* do Kanban;
+2. Impacto avaliado: alteração no modelo de dados, na interface e novos testes;
+3. Implementação em commit dedicado (`feat: adiciona campo de prioridade às tarefas`);
+4. Novos testes unitários garantindo a validação e a ordenação por prioridade;
+5. Pipeline de CI validou a mudança antes da integração;
+6. Card movido para *Concluído* e README atualizado (este registro).
+
+Essa simulação demonstra o valor das metodologias ágeis: **mudanças são bem-vindas**,
+desde que controladas — com rastreabilidade (Kanban + commits) e segurança (testes + CI).
 
 ## 🛠️ Tecnologias
 
