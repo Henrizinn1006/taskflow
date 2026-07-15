@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow — Gerenciamento de Tarefas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>📋 TaskFlow</h1>
+        <p>Sistema de gerenciamento de tarefas — TechFlow Solutions</p>
+    </header>
+
+    <main>
+        <!-- Mensagens de feedback (sucesso/erro) -->
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensagem in mensagens %}
+                <div class="alerta {{ categoria }}">{{ mensagem }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <!-- Formulário de criação (CREATE) -->
+        <section class="card">
+            <h2>Nova tarefa</h2>
+            <form action="{{ url_for('criar') }}" method="post" class="form-nova">
+                <input type="text" name="titulo" placeholder="Título da tarefa *" required>
+                <input type="text" name="descricao" placeholder="Descrição (opcional)">
+                <button type="submit">Adicionar</button>
+            </form>
+        </section>
+
+        <!-- Lista de tarefas (READ) -->
+        <section class="card">
+            <h2>Tarefas ({{ tarefas|length }})</h2>
+            {% if tarefas %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Título</th>
+                        <th>Descrição</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in tarefas %}
+                    <tr>
+                        <td>{{ t.id }}</td>
+                        <td>{{ t.titulo }}</td>
+                        <td>{{ t.descricao }}</td>
+                        <td>
+                            <!-- UPDATE: mudar status -->
+                            <form action="{{ url_for('atualizar', id_tarefa=t.id) }}" method="post" class="inline">
+                                <select name="status" onchange="this.form.submit()">
+                                    {% for s in status_validos %}
+                                        <option value="{{ s }}" {% if s == t.status %}selected{% endif %}>{{ s }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            <!-- DELETE -->
+                            <form action="{{ url_for('excluir', id_tarefa=t.id) }}" method="post" class="inline">
+                                <button type="submit" class="excluir">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="vazio">Nenhuma tarefa cadastrada ainda. Crie a primeira acima! 🚀</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer>
+        <p>TechFlow Solutions — Projeto acadêmico de Engenharia de Software</p>
+    </footer>
+</body>
+</html>
