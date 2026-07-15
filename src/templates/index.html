@@ -7,80 +7,103 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <header>
-        <h1>📋 TaskFlow</h1>
-        <p>Sistema de gerenciamento de tarefas — TechFlow Solutions</p>
+    <header class="hero">
+        <div class="hero-body">
+            <div>
+                <p class="eyebrow">TaskFlow</p>
+                <h1>Gerenciamento de tarefas</h1>
+                <p class="subtitle">Organize entregas, priorize o que importa e acompanhe o progresso da equipe.</p>
+            </div>
+            <div class="hero-summary">
+                <span class="summary-value">{{ tarefas|length }}</span>
+                <span class="summary-label">tarefas ativas</span>
+            </div>
+        </div>
     </header>
 
     <main>
-        <!-- Mensagens de feedback (sucesso/erro) -->
         {% with mensagens = get_flashed_messages(with_categories=true) %}
             {% for categoria, mensagem in mensagens %}
                 <div class="alerta {{ categoria }}">{{ mensagem }}</div>
             {% endfor %}
         {% endwith %}
 
-        <!-- Formulário de criação (CREATE) -->
-        <section class="card">
-            <h2>Nova tarefa</h2>
-            <form action="{{ url_for('criar') }}" method="post" class="form-nova">
-                <input type="text" name="titulo" placeholder="Título da tarefa *" required>
-                <input type="text" name="descricao" placeholder="Descrição (opcional)">
-                <select name="prioridade">
-                    {% for p in prioridades %}
-                        <option value="{{ p }}" {% if p == 'Média' %}selected{% endif %}>{{ p }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit">Adicionar</button>
-            </form>
-        </section>
+        <div class="page-content">
+            <section class="card">
+                <div class="card-header">
+                    <h2>Nova tarefa</h2>
+                </div>
+                <form action="{{ url_for('criar') }}" method="post" class="form-nova">
+                    <input type="text" name="titulo" placeholder="Título da tarefa *" required>
+                    <input type="text" name="descricao" placeholder="Descrição (opcional)">
+                    <select name="prioridade">
+                        {% for p in prioridades %}
+                            <option value="{{ p }}" {% if p == 'Média' %}selected{% endif %}>{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Adicionar</button>
+                </form>
+            </section>
 
-        <!-- Lista de tarefas (READ) ordenada por prioridade -->
-        <section class="card">
-            <h2>Tarefas ({{ tarefas|length }})</h2>
-            {% if tarefas %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Título</th>
-                        <th>Descrição</th>
-                        <th>Prioridade</th>
-                        <th>Status</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for t in tarefas %}
-                    <tr class="prioridade-{{ t.prioridade|lower|replace('é','e') }}">
-                        <td>{{ t.id }}</td>
-                        <td>{{ t.titulo }}</td>
-                        <td>{{ t.descricao }}</td>
-                        <td><span class="badge">{{ t.prioridade }}</span></td>
-                        <td>
-                            <!-- UPDATE: mudar status/prioridade -->
-                            <form action="{{ url_for('atualizar', id_tarefa=t.id) }}" method="post" class="inline">
-                                <select name="status" onchange="this.form.submit()">
-                                    {% for s in status_validos %}
-                                        <option value="{{ s }}" {% if s == t.status %}selected{% endif %}>{{ s }}</option>
-                                    {% endfor %}
-                                </select>
-                            </form>
-                        </td>
-                        <td>
-                            <!-- DELETE -->
-                            <form action="{{ url_for('excluir', id_tarefa=t.id) }}" method="post" class="inline">
-                                <button type="submit" class="excluir">Excluir</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-                <p class="vazio">Nenhuma tarefa cadastrada ainda. Crie a primeira acima! 🚀</p>
-            {% endif %}
-        </section>
+            <section class="card">
+                <div class="card-header">
+                    <h2>Tarefas ({{ tarefas|length }})</h2>
+                </div>
+                {% if tarefas %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tarefa</th>
+                                    <th>Descrição</th>
+                                    <th>Prioridade</th>
+                                    <th>Status</th>
+                                    <th>Atualizar</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for t in tarefas %}
+                                <tr class="prioridade-{{ t.prioridade|lower|replace('é','e') }}">
+                                    <td>{{ t.id }}</td>
+                                    <td>
+                                        <strong>{{ t.titulo }}</strong>
+                                        <div class="task-desc">{{ t.descricao }}</div>
+                                    </td>
+                                    <td><span class="badge">{{ t.prioridade }}</span></td>
+                                    <td><span class="badge-status status-{{ t.status|lower|replace(' ', '-')|replace('é','e') }}">{{ t.status }}</span></td>
+                                    <td>
+                                        <form action="{{ url_for('atualizar', id_tarefa=t.id) }}" method="post" class="inline update-form">
+                                            <select name="status" class="select-small" onchange="this.form.submit()">
+                                                {% for s in status_validos %}
+                                                    <option value="{{ s }}" {% if s == t.status %}selected{% endif %}>{{ s }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </form>
+                                        <form action="{{ url_for('atualizar', id_tarefa=t.id) }}" method="post" class="inline update-form">
+                                            <select name="prioridade" class="select-small" onchange="this.form.submit()">
+                                                {% for p in prioridades %}
+                                                    <option value="{{ p }}" {% if p == t.prioridade %}selected{% endif %}>{{ p }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <form action="{{ url_for('excluir', id_tarefa=t.id) }}" method="post" class="inline">
+                                            <button type="submit" class="excluir">Excluir</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="empty-state">Nenhuma tarefa cadastrada ainda. Crie a primeira acima.</p>
+                {% endif %}
+            </section>
+        </div>
     </main>
 
     <footer>
